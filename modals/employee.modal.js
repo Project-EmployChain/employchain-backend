@@ -20,15 +20,27 @@ const employeeSchema = new Schema({
     fullname: {
       type: String,
     },
+    gender: {
+      type: String
+    },
+    dob: {
+      type: String
+    },
+    address: {
+      type: String
+    },
     aadhaarhash: {
       type: String,
     },
     eduIPFS: {
+      type: String,
+    },
+    workIPFS: {
+      type: String,
+    },
+    resumeIPFS: {
       type: Object,
     },
-    empIPFS: {
-      type: Object,
-    }
   }, { collection: 'employee' });
 
   employeeSchema.pre('save', async function(next){

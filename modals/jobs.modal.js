@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const jobSchema = new Schema({
-    company: {
+    companyid: {
         type: String,
         required: true
     },
@@ -10,25 +10,37 @@ const jobSchema = new Schema({
         type: String,
         required: true
     },
+    jobype: {
+        type: String,
+        required: true
+    },
+    jobdesc: {
+        type: String,
+    },
+    noofopenings: {
+        type: Number,
+    },
     location: {
         type: String,
         required: true
+    },
+    bond: {
+        type: String,
     },
     salary: {
         type: String,
         required: true
     },
-    description: {
+    salarytype: {
         type: String,
-        required: true
     },
-    jobrole: {
+    description: {
         type: String,
         required: true
     },
     posttime: {
         type: Date,
-        default: Date.now
+        default: Date.now()
     },
     noofapplicants: {
         type: Number,
