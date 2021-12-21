@@ -16,7 +16,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //------------------ ROUTES -------------------
 
-
+app.use("/employer", require("./routes/employer"));
+app.use("/employee", require("./routes/employee"));
 //---------------------------------------------
 
 app.get('/test', (req, res, next) => {

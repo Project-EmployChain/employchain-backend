@@ -10,7 +10,7 @@ const jobSchema = new Schema({
         type: String,
         required: true
     },
-    jobype: {
+    jobtype: {
         type: String,
         required: true
     },
@@ -45,6 +45,10 @@ const jobSchema = new Schema({
     noofapplicants: {
         type: Number,
         default: 0
+    },
+    applicants: {
+        type: [String],
+        default: []
     },
 }, { collection: 'jobs' });
 

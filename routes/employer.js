@@ -2,9 +2,11 @@ const express = require("express");
 
 const EmployerRouter = express.Router();
 
+const { signAccessToken, verifyAccessToken, signRefreshToken, verifyRefreshToken } = require("../helpers/jwthelper");
+
 const Employer = require("../modals/employer.modal");
 const Employee = require("../modals/employee.modal");
-const Job = require("../modals/job.modal");
+const Job = require("../modals/jobs.modal");
 const Hired = require("../modals/hire.modal");
 
 EmployerRouter.post("/signup", async (req, res, next) => {
@@ -27,6 +29,29 @@ EmployerRouter.post("/signup", async (req, res, next) => {
     }
 });
 
+EmployerRouter.post("/login", async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+        const findEmployer = await Employer.findOne({ email: email });
+        if (findEmployer) {
+            const isValidPassword = await findEmployer.isValidPassword(password);
+            if (isValidPassword) {
+                const accessToken = await signAccessToken(email);
+                const refreshToken = await signRefreshToken(email);
+                res.status(200).send({ accessToken, refreshToken, cid: findEmployer._id });
+            } else {
+                res.status(400).send({ error: "Invalid password" });
+            }
+        } else {
+            res.status(400).send({ error: "Employer not found" });
+        }
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+
 EmployerRouter.post('/update', async (req, res, next) => {
     try {
         const { companyname, companyphone, gstnumber, walletaddress } = req.body;
@@ -48,7 +73,7 @@ EmployerRouter.post('/update', async (req, res, next) => {
     }
 })
 
-EmployerRouter.get("/getpostedjobs", async (req, res, next) => {
+EmployerRouter.post("/getjobs", async (req, res, next) => {
     try {
         const { id } = req.body;
         const findEmployer = await Employer.findOne({ _id: id });
@@ -66,17 +91,18 @@ EmployerRouter.get("/getpostedjobs", async (req, res, next) => {
     }
 });
 
-EmployerRouter.get("/getjob", async (req, res, next) => {
+EmployerRouter.post("/getjob", async (req, res, next) => {
     try {
         const { id } = req.body;
         const findJob = await Job.findOne({ _id: id });
+        
         res.send({ status: 'status', data: findJob });
     } catch (error) {
         next(error);
     }
 });
 
-EmployerRouter.get("/addjob", async(req, res, next) => {
+EmployerRouter.post("/addjob", async(req, res, next) => {
     try {
         const { id, jobtitle, jobtype, noofopenings, location, bond, salary, salarytype, jobdesc } = req.body;
         let job = new Job({
@@ -88,7 +114,7 @@ EmployerRouter.get("/addjob", async(req, res, next) => {
             bond: bond,
             salary: salary,
             salarytype: salarytype,
-            jobdesc: jobdesc
+            description: jobdesc
         })
         await job.save();
         let nhired = new Hired({
@@ -98,7 +124,7 @@ EmployerRouter.get("/addjob", async(req, res, next) => {
         })
         await nhired.save();
         await Employer.findOneAndUpdate({ _id: id }, { $push: { jobs: job._id } }, { new: true })
-        res.send({ status: 'status', data: job });
+        res.send({ status: 'success', data: job });
 
     } catch (error) {
         next(error);
@@ -127,3 +153,5 @@ EmployerRouter.get("/getProfile", async(req, res, next) => {
         next(error);
     }
 });
+
+module.exports = EmployerRouter;

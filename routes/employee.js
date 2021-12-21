@@ -2,7 +2,7 @@ const express = require("express");
 
 const EmployeeRouter = express.Router();
 const { signAccessToken, verifyAccessToken, signRefreshToken, verifyRefreshToken } = require("../helpers/jwthelper");
-const Employee = require("../models/employee");
+const Employee = require("../modals/employee.modal");
 
 EmployeeRouter.post("/signup", async (req, res, next) => {
     try {
@@ -31,8 +31,8 @@ EmployeeRouter.post("/login", async (req, res, next) => {
         if (findEmployee) {
             const isValidPassword = await findEmployee.isValidPassword(password);
             if (isValidPassword) {
-                const accessToken = signAccessToken(findEmployee);
-                const refreshToken = signRefreshToken(findEmployee);
+                const accessToken = signAccessToken(email);
+                const refreshToken = signRefreshToken(email);
                 res.status(200).send({ accessToken, refreshToken });
             } else {
                 res.status(400).send({ error: "Invalid password" });
@@ -45,7 +45,7 @@ EmployeeRouter.post("/login", async (req, res, next) => {
     }
 });
 
-ProfileRouter.post("/saveprofile", async (req, res, next) => {
+EmployeeRouter.post("/saveprofile", async (req, res, next) => {
     try {
         const { name, email, phone, gender, dob, address, education, work, skills, resumelink } = req.body;
         const finduser = await User.findOne({ email: email });
